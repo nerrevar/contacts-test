@@ -5,10 +5,18 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "apilint": "eslint --fix api/index.js",
+    "devserver": "nodemon -r esm api/index.js",
+    "devfront": "vue-cli-service build --watch"
   },
   "dependencies": {
+    "connect-history-api-fallback": "^1.6.0",
     "core-js": "^3.6.5",
+    "dotenv": "^8.2.0",
+    "esm": "^3.2.25",
+    "firebase-admin": "^9.5.0",
+    "morgan": "^1.10.0",
     "vue": "^2.6.11",
     "vue-router": "^3.2.0",
     "vuex": "^3.4.0"
@@ -28,6 +36,7 @@
     "eslint-plugin-standard": "^4.0.0",
     "eslint-plugin-vue": "^6.2.2",
     "node-sass": "^4.12.0",
+    "nodemon": "^2.0.7",
     "sass-loader": "^8.0.2",
     "vue-template-compiler": "^2.6.11"
   }
