@@ -50,6 +50,12 @@ app.post('/delete', async (req, res) => {
   res.end()
 })
 
+app.post('/delete_field', async (req, res) => {
+  const docRef = db.collection('contact').doc(req.body.docId)
+  await docRef.update({ [req.body.field]: firebase.firestore.FieldValue.delete() })
+  res.end()
+})
+
 app.use((req, res) => {
   res.status(404).end()
 })
