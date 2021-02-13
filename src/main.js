@@ -4,7 +4,7 @@ import router from './router'
 
 Vue.config.productionTip = process.env.mode === 'production'
 
-Vue.prototype.$fetch = async (url, body) => {
+Vue.prototype.$_fetch = async (url, body) => {
   return await fetch(url, {
     method: 'POST',
     mode: 'same-origin',
@@ -18,5 +18,5 @@ Vue.prototype.$fetch = async (url, body) => {
 
 new Vue({
   router,
-  render: h => h(App)
+  render: h => h(App),
 }).$mount('#app')

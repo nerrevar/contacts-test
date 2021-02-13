@@ -29,13 +29,20 @@ app.post('/create', async (req, res) => {
 })
 
 app.post('/read', async (req, res) => {
-  let contactsArr = {}
-  const snapshot = await db.collection('contact').get()
-  snapshot.forEach(doc => contactsArr[doc.id] = doc.data())
-  res.send({
-    status: 'success',
-    contactsArr: contactsArr,
-  })
+  if (req.body.docId !== undefined) {
+    const snapshot = await db.collection('contact').doc(req.body.docId).get()
+    res.send({
+      contact: snapshot.data()
+    })
+  }
+  else {
+    let contactsArr = {}
+    const snapshot = await db.collection('contact').get()
+    snapshot.forEach(doc => contactsArr[doc.id] = doc.data())
+    res.send({
+      contactsArr: contactsArr,
+    })
+  }
 })
 
 app.post('/update', async (req, res) => {

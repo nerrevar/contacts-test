@@ -1,21 +1,22 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 
-import Home from '../views/Home.vue'
-import ContactInfo from '../views/ContactInfo.vue'
+import HomeView from '../views/HomeView.vue'
+import ContactInfoView from '../views/ContactInfoView.vue'
 
 Vue.use(VueRouter)
 
 const routes = [
   {
     path: '/',
-    name: 'Список контактов',
-    component: Home,
+    name: 'HomeView',
+    component: HomeView,
   },
   {
-    path: '/contact_info',
-    name: 'Контактная информация',
-    component: ContactInfo,
+    path: '/contact_info/:docId',
+    name: 'ContactInfoView',
+    component: ContactInfoView,
+    props: true,
   },
   {
     path: '*',
@@ -29,8 +30,20 @@ const router = new VueRouter({
   routes,
 })
 
-router.afterEach((to, from) => {
-  document.title = to.name
+router.beforeEach((to, from, next) => {
+  let title
+  switch (to.name) {
+    case 'HomeView': {
+      title = 'Список контактов'
+      break
+    }
+    case 'ContactInfoView': {
+      title = 'Контактная информация'
+      break
+    }
+  }
+  document.title = title
+  next()
 })
 
 export default router
