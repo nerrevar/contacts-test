@@ -32,7 +32,7 @@ app.post('/read', async (req, res) => {
   if (req.body.docId !== undefined) {
     const snapshot = await db.collection('contact').doc(req.body.docId).get()
     res.send({
-      contact: snapshot.data()
+      contact: snapshot.data(),
     })
   }
   else {
