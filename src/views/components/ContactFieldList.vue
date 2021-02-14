@@ -1,18 +1,15 @@
 <template>
-  <table class="table">
-    <tbody>
-      <ContactField
-        class="property"
-        v-for="(prop, index) in getContactDataWithoutName"
-        :key="index"
-        :index="index"
-        :prop="prop"
-        :deletingDisabled="deletingDisabled"
-        @deleteField="$emit('deleteField', $event)"
-        @updateField="$emit('updateField', $event)"
-      />
-    </tbody>
-  </table>
+  <div class="wrapper">
+    <ContactField
+      v-for="(prop, index) in getContactDataWithoutName"
+      :key="index"
+      :index="index"
+      :prop="prop"
+      :deletingDisabled="deletingDisabled"
+      @deleteField="$emit('deleteField', $event)"
+      @updateField="$emit('updateField', $event)"
+    />
+  </div>
 </template>
 
 <script>
@@ -36,7 +33,7 @@ export default {
   },
   computed: {
     getContactDataWithoutName () {
-       // Contact entries without name property
+      // Contact entries without name property
       let filteredEntries = Object.entries(this.contactData).filter(e => e[0] !== 'name')
       // Contact object without name property
       return Object.fromEntries(filteredEntries)
@@ -44,6 +41,3 @@ export default {
   },
 }
 </script>
-
-<style lang="sass" scoped>
-</style>

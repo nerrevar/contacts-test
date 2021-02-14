@@ -75,7 +75,7 @@ export default {
       if (!this.keyEditable && !this.valueEditable)
         this.$emit('addField', [this.keyValue, this.valueValue])
     },
-  }
+  },
 }
 </script>
 

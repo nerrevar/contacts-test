@@ -1,29 +1,35 @@
 <template>
   <div class="wrapper">
-    <router-link
-      :to="{name: 'HomeView'}"
+    <div
+      class="button-block"
     >
-      &#8592;Назад
-    </router-link>
-    <button
-      :disabled="Object.keys(lastEvent).length === 0"
-      @click="revertLastEvent"
-    >
-      Отменить последнее действие
-    </button>
-    <h1>{{ getName }}</h1>
+      <router-link
+        class="button"
+        :to="{name: 'HomeView'}"
+      >
+        &#8592; Назад
+      </router-link>
+      <span
+        class="button"
+        :disabled="Object.keys(lastEvent).length === 0"
+        @click="revertLastEvent"
+      >
+        &#8634; Отменить
+      </span>
+    </div>
+    <h1 class="main-title">{{ getName }}</h1>
     <ContactFieldList
       :contactData="contactData || {}"
       @updateField="sendUpdateRequest($event)"
       @deleteField="sendDeleteRequest($event)"
     />
     <!-- Button for new field -->
-    <button
+    <span
       class="button"
       @click="setFieldAddFormVisible(true)"
     >
       Добавить поле
-    </button>
+    </span>
     <!-- New field form -->
     <EditForm
       class="field-add-form"
@@ -84,7 +90,7 @@ export default {
       this.$_fetch(
         '/read',
         {
-          docId: this.docId
+          docId: this.docId,
         }
       ).then(
         response => response.json()
@@ -92,7 +98,9 @@ export default {
         response => this.contactData = response.contact
       )
     },
-    setLastEvent (actionType, field, oldValue=undefined) {
+
+    // Last event
+    setLastEvent (actionType, field, oldValue = undefined) {
       this.lastEvent = {
         actionType: actionType,
         field: field,
@@ -106,7 +114,7 @@ export default {
           break
         }
         case 'delete': {
-          this.addField(`${ this.lastEvent.field }:${ this.lastEvent.oldValue }`)
+          this.addField(`${this.lastEvent.field}:${this.lastEvent.oldValue}`)
           break
         }
         case 'update': {
@@ -117,6 +125,7 @@ export default {
       }
       this.lastEvent = {}
     },
+
     // Page parts visibility
     setFieldAddFormVisible (value) {
       this.isFieldAddFormVisible = value
@@ -124,6 +133,7 @@ export default {
     setInputErrorVisible (value) {
       this.isInputErrorVisible = value
     },
+
     // Field addition
     validateInput (value) {
       let valueArr = value.split(':').map(val => val.trim())
@@ -138,35 +148,36 @@ export default {
       this.sendUpdateRequest({ [newFieldArr[0]]: newFieldArr[1] }, true)
       this.setFieldAddFormVisible(false)
     },
+
     // Request to api
-    sendUpdateRequest (newValue, newField=false) {
+    sendUpdateRequest (newValue, newField = false) {
       this.$_fetch(
         '/update',
         {
           docId: this.docId,
-          newValue: newValue
+          newValue: newValue,
         }
       ).then(
         () => {
           if (newField)
             this.setLastEvent('create', Object.keys(newValue)[0])
           else
-            this.setLastEvent('update', Object.keys(newValue)[0], `${ this.contactData[Object.keys(newValue)[0]] }`)
+            this.setLastEvent('update', Object.keys(newValue)[0], `${this.contactData[Object.keys(newValue)[0]]}`)
           this.loadContactData()
         }
       )
     },
     sendDeleteRequest (field) {
-      if (window.confirm(`Вы действительно хотите удалить поле ${ field }?`))
+      if (window.confirm(`Вы действительно хотите удалить поле ${field}?`))
         this.$_fetch(
           '/delete_field',
           {
             docId: this.docId,
-            field: field
+            field: field,
           }
         ).then(
           () => {
-            this.setLastEvent('delete', field, `${ this.contactData[field] }`)
+            this.setLastEvent('delete', field, `${this.contactData[field]}`)
             this.loadContactData()
           }
         )
@@ -176,9 +187,6 @@ export default {
   created () {
     if (this.contactData === undefined)
       this.loadContactData()
-  }
+  },
 }
 </script>
-
-<style lang="sass" scoped>
-</style>

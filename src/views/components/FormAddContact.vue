@@ -98,7 +98,7 @@ export default {
       this.$_fetch(
         '/create',
         {
-          doc: this.contactData
+          doc: this.contactData,
         }
       ).then(
         this.$emit('complete')
