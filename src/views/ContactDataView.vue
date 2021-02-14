@@ -5,6 +5,12 @@
     >
       &#8592;Назад
     </router-link>
+    <button
+      :disabled="Object.keys(lastEvent).length === 0"
+      @click="revertLastEvent"
+    >
+      Отменить последнее действие
+    </button>
     <h1>{{ getName }}</h1>
     <ContactFieldList
       :contactData="contactData || {}"
@@ -59,6 +65,7 @@ export default {
       contactData: this.contact,
       isFieldAddFormVisible: false,
       isInputErrorVisible: false,
+      lastEvent: {},
     }
   },
 
@@ -85,6 +92,31 @@ export default {
         response => this.contactData = response.contact
       )
     },
+    setLastEvent (actionType, field, oldValue=undefined) {
+      this.lastEvent = {
+        actionType: actionType,
+        field: field,
+        oldValue: oldValue,
+      }
+    },
+    revertLastEvent () {
+      switch (this.lastEvent.actionType) {
+        case 'create': {
+          this.sendDeleteRequest(this.lastEvent.field)
+          break
+        }
+        case 'delete': {
+          this.addField(`${ this.lastEvent.field }:${ this.lastEvent.oldValue }`)
+          break
+        }
+        case 'update': {
+          this.sendUpdateRequest({ [this.lastEvent.field]: this.lastEvent.oldValue })
+          break
+        }
+        default: return
+      }
+      this.lastEvent = {}
+    },
     // Page parts visibility
     setFieldAddFormVisible (value) {
       this.isFieldAddFormVisible = value
@@ -103,11 +135,11 @@ export default {
     addField (value) {
       let newFieldArr = value.split(':')
       newFieldArr.map(val => val.trim())
-      this.sendUpdateRequest({ [newFieldArr[0]]: newFieldArr[1] })
+      this.sendUpdateRequest({ [newFieldArr[0]]: newFieldArr[1] }, true)
       this.setFieldAddFormVisible(false)
     },
     // Request to api
-    sendUpdateRequest (newValue) {
+    sendUpdateRequest (newValue, newField=false) {
       this.$_fetch(
         '/update',
         {
@@ -116,6 +148,10 @@ export default {
         }
       ).then(
         () => {
+          if (newField)
+            this.setLastEvent('create', Object.keys(newValue)[0])
+          else
+            this.setLastEvent('update', Object.keys(newValue)[0], `${ this.contactData[Object.keys(newValue)[0]] }`)
           this.loadContactData()
         }
       )
@@ -129,7 +165,10 @@ export default {
             field: field
           }
         ).then(
-          this.loadContactData()
+          () => {
+            this.setLastEvent('delete', field, `${ this.contactData[field] }`)
+            this.loadContactData()
+          }
         )
     },
   },
