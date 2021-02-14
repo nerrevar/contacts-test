@@ -29,7 +29,7 @@
         </router-link>
         <!-- Delete button -->
         <span
-          @click="deleteContact(index)"
+          @click="deleteContact(index, contact.name)"
         >
           &#10006;
         </span>
@@ -80,15 +80,16 @@ export default {
       this.setFormAddContactVisible(false)
       this.loadContactArr()
     },
-    deleteContact (docId) {
-      this.$_fetch(
-        '/delete',
-        {
-          docId: docId,
-        }
-      ).then(
-        this.loadContactArr()
-      )
+    deleteContact (docId, contactName) {
+      if (window.confirm(`Вы действительно хотите удалить контакт ${ contactName }?`))
+        this.$_fetch(
+          '/delete',
+          {
+            docId: docId,
+          }
+        ).then(
+          this.loadContactArr()
+        )
     },
   },
   created () {

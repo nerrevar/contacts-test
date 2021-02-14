@@ -121,15 +121,16 @@ export default {
       )
     },
     sendDeleteRequest (field) {
-      this.$_fetch(
-        '/delete_field',
-        {
-          docId: this.docId,
-          field: field
-        }
-      ).then(
-        this.loadContactData()
-      )
+      if (window.confirm(`Вы действительно хотите удалить поле ${ field }?`))
+        this.$_fetch(
+          '/delete_field',
+          {
+            docId: this.docId,
+            field: field
+          }
+        ).then(
+          this.loadContactData()
+        )
     },
   },
 

@@ -27,7 +27,7 @@
           v-else
           key="name"
           class="property"
-          :index="'name'"
+          index="name"
           :prop="contactData.name"
           :deletingDisabled="true"
           @updateField="updateField({ name: $event })"

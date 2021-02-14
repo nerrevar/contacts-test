@@ -9,6 +9,7 @@
       v-model="inputValue"
       @input="validateInput($event.target.value)"
       @keypress.enter="$emit('complete', inputValue)"
+      @keypress.esc="cancelPrompt"
     />
     <!-- OK button -->
     <button
@@ -21,7 +22,7 @@
     <!-- Cancel button -->
     <button
       class="field-edit__cancel-button"
-      @click="$emit('aborted')"
+      @click="cancelPrompt"
     >
       &#10006;
     </button>
@@ -74,6 +75,10 @@ export default {
     setErrorVisibility (value) {
       this.errorVisible = value
     },
+    cancelPrompt () {
+      if (window.confirm('Отменить редактирование поля?'))
+        this.$emit('aborted')
+    }
   },
 }
 </script>
