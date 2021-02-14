@@ -24,31 +24,75 @@
         v-for="(contact, index) in contactsArr"
         :key="index"
       >
-        <router-link :to="{ name: 'ContactInfoView', params: { docId: index, contact: contact } }">
+        <router-link :to="{ name: 'ContactDataView', params: { docId: index, contact: contact } }">
           {{ contact.name }}
         </router-link>
+        <!-- Delete button -->
+        <span
+          @click="deleteContact(index)"
+        >
+          &#10006;
+        </span>
       </div>
     </div>
+    <button
+      @click="setFormAddContactVisible(true)"
+    >
+      Добавить контакт
+    </button>
+    <FormAddContact
+      v-if="formAddVisible"
+      @complete="addContact"
+      @aborted="setFormAddContactVisible(false)"
+    />
   </div>
 </template>
 
 <script>
+import FormAddContact from './components/FormAddContact'
+
 export default {
   name: 'HomeView',
+  components: {
+    FormAddContact,
+  },
   data () {
     return {
       contactsArr: {},
+      formAddVisible: false,
     }
   },
+  methods: {
+    loadContactArr () {
+      this.$_fetch(
+        '/read',
+        {}
+      ).then(
+        response => response.json()
+      ).then(
+        response => this.contactsArr = response.contactsArr
+      )
+    },
+    setFormAddContactVisible (value) {
+      this.formAddVisible = value
+    },
+    addContact () {
+      this.setFormAddContactVisible(false)
+      this.loadContactArr()
+    },
+    deleteContact (docId) {
+      this.$_fetch(
+        '/delete',
+        {
+          docId: docId,
+        }
+      ).then(
+        this.loadContactArr()
+      )
+    },
+  },
   created () {
-    this.$_fetch(
-      '/read',
-      {}
-    ).then(
-      response => response.json()
-    ).then(
-      response => this.contactsArr = response.contactsArr
-    )
+    this.loadContactArr()
   },
 }
 </script>

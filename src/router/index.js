@@ -2,7 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 
 import HomeView from '../views/HomeView.vue'
-import ContactInfoView from '../views/ContactInfoView.vue'
+import ContactDataView from '../views/ContactDataView.vue'
 
 Vue.use(VueRouter)
 
@@ -14,8 +14,8 @@ const routes = [
   },
   {
     path: '/contact_info/:docId',
-    name: 'ContactInfoView',
-    component: ContactInfoView,
+    name: 'ContactDataView',
+    component: ContactDataView,
     props: true,
   },
   {
@@ -37,7 +37,7 @@ router.beforeEach((to, from, next) => {
       title = 'Список контактов'
       break
     }
-    case 'ContactInfoView': {
+    case 'ContactDataView': {
       title = 'Контактная информация'
       break
     }

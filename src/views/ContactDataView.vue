@@ -1,20 +1,16 @@
 <template>
   <div class="wrapper">
+    <router-link
+      :to="{name: 'HomeView'}"
+    >
+      &#8592;Назад
+    </router-link>
     <h1>{{ getName }}</h1>
-    <!-- Table of properties -->
-    <table class="table">
-      <tbody>
-        <ContactField
-          class="property"
-          v-for="(prop, index) in getContactDataWithoutName"
-          :key="index"
-          :index="index"
-          :prop="prop"
-          @deleteField="sendDeleteRequest($event)"
-          @updateField="sendUpdateRequest($event)"
-        />
-      </tbody>
-    </table>
+    <ContactFieldList
+      :contactData="contactData || {}"
+      @updateField="sendUpdateRequest($event)"
+      @deleteField="sendDeleteRequest($event)"
+    />
     <!-- Button for new field -->
     <button
       class="button"
@@ -23,42 +19,28 @@
       Добавить поле
     </button>
     <!-- New field form -->
-    <div
+    <EditForm
       class="field-add-form"
       v-if="isFieldAddFormVisible"
-    >
-      <span class="field-add-form__text">Новое поле: </span>
-      <input
-        type="text"
-        ref="newField"
-        placeholder="имя-поля:значение-поля"
-        @input="validateInput"
-      />
-      <button
-        class="field-add-form__add-button"
-        :disabled="isInputErrorVisible"
-        @click="addField"
-      >
-        Добавить
-      </button>
-      <span
-        class="input-error"
-        v-show="isInputErrorVisible"
-      >
-        Неправильный ввод. Требуемый формат: имя-поля:значение-поля
-      </span>
-    </div>
+      placeholder="имя-поля:значение-поля"
+      errorText="Неправильный ввод. Требуемый формат: имя-поля:значение-поля"
+      :customInputValidator="validateInput"
+      @complete="addField($event)"
+      @aborted="setFieldAddFormVisible(false)"
+    />
   </div>
 </template>
 
 <script>
-import ContactField from './components/ContactField'
+import ContactFieldList from './components/ContactFieldList'
+import EditForm from './components/EditForm'
 
 export default {
   name: 'ContactDataView',
 
   components: {
-    ContactField,
+    ContactFieldList,
+    EditForm,
   },
 
   props: {
@@ -87,16 +69,6 @@ export default {
       else
         return this.contactData.name
     },
-    getContactDataWithoutName () {
-      if (!this.contactData)
-        return {}
-      else {
-         // Contact entries without name property
-        let filteredEntries = Object.entries(this.contactData).filter(e => e[0] !== 'name')
-        // Contact object without name property
-        return Object.fromEntries(filteredEntries)
-      }
-    },
   },
 
   methods: {
@@ -121,21 +93,17 @@ export default {
       this.isInputErrorVisible = value
     },
     // Field addition
-    validateInput () {
-      let valueArr = this.$refs.newField.value.split(':').map(val => val.trim())
+    validateInput (value) {
+      let valueArr = value.split(':').map(val => val.trim())
       if (valueArr.length === 2)
-        if (valueArr[0] !== '' && valueArr[1] !== '') {
-          this.setInputErrorVisible(false)
-          return
-        }
-      this.setInputErrorVisible(true)
+        if (valueArr[0] !== '' && valueArr[1] !== '')
+          return true
+      return false
     },
-    addField () {
-      let newField = {}
-      let newFieldArr = this.$refs.newField.value.split(':')
+    addField (value) {
+      let newFieldArr = value.split(':')
       newFieldArr.map(val => val.trim())
-      newField[newFieldArr[0]] = newFieldArr[1]
-      this.sendUpdateRequest(newField)
+      this.sendUpdateRequest({ [newFieldArr[0]]: newFieldArr[1] })
       this.setFieldAddFormVisible(false)
     },
     // Request to api

@@ -11,49 +11,25 @@
       </span>
       <!-- Delete button -->
       <span
+        v-if="!deletingDisabled"
         @click="deleteField"
       >
         &#10006;
       </span>
       <!-- Edit form -->
-      <div
-        class="field-edit"
+      <EditForm
         v-if="editFormVisible"
-      >
-        <input
-          type="text"
-          class="field-edit__input"
-          ref="editInput"
-          @input="validateInput($event.target.value)"
-          @keypress.enter="updateField"
-        />
-        <!-- OK button -->
-        <button
-          class="field-edit__ok-button"
-          @click="updateField"
-        >
-          &#10004;
-        </button>
-        <!-- Cancel button -->
-        <button
-          class="field-edit__cancel-button"
-          @click="setEditFormVisibility(false)"
-        >
-          &#10006;
-        </button>
-        <!-- Error label -->
-        <span
-          class="field-edit__error-label"
-          v-if="errorVisible"
-        >
-          Значение поля не может быть пустым
-        </span>
-      </div>
+        placeholder="Новое значение поля"
+        @complete="updateField($event)"
+        @aborted="setEditFormVisibility(false)"
+      />
     </td>
   </tr>
 </template>
 
 <script>
+import EditForm from './EditForm'
+
 export default {
   name: 'ContactField',
   props: {
@@ -65,37 +41,30 @@ export default {
       type: String,
       required: true,
     },
+    deletingDisabled: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   data () {
     return {
       editFormVisible: false,
-      errorVisible: false,
     }
   },
+  components: {
+    EditForm,
+  },
   methods: {
-    validateInput (value) {
-      if (value.trim() === '')
-        this.setErrorVisibility(true)
-      else
-        this.setErrorVisibility(false)
-    },
-    updateField () {
-      const value = this.$refs.editInput.value.trim()
-      if (value !== '') {
-        this.$emit('updateField', { [this.index]: value })
-        this.setEditFormVisibility(false)
-      }
-      else
-        this.setErrorVisibility(true)
+    updateField (value) {
+      this.$emit('updateField', { [this.index]: value })
+      this.setEditFormVisibility(false)
     },
     deleteField () {
       this.$emit('deleteField', this.index)
     },
     setEditFormVisibility (value) {
       this.editFormVisible = value
-    },
-    setErrorVisibility (value) {
-      this.errorVisible = value
     },
   },
 }
